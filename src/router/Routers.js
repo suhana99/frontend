@@ -9,6 +9,7 @@ import TourDetails from './../pages/TourDetails'
 import Tours from './../pages/Tours'
 import FeaturedTourList from '../components/Featured-tours/FeaturedTourList'
 import PasswordReset from '../pages/PasswordReset'
+import SellerDashboard from '../pages/SellerDashboard'
 
 const Routers = () => {
    return (
@@ -23,6 +24,7 @@ const Routers = () => {
          <Route path='/tours/search' element={<SearchResultList/>} />
          <Route path='/about' element={<FeaturedTourList/>}/>
          <Route path="/reset-password/:token" element={<PasswordReset/>} />
+         <Route path="/seller-dashboard" element={<SellerDashboard/>}/>
       </Routes>
    )
 }
