@@ -1,63 +1,75 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Button } from 'reactstrap';
-import { useNavigate } from 'react-router-dom';
-import { BASE_URL } from '../utils/config';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Table } from "reactstrap"; // Using Reactstrap for styling (optional)
 
+// Seller Dashboard Component
 const SellerDashboard = () => {
-   const [sellerData, setSellerData] = useState(null);
-   const navigate = useNavigate();
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-   useEffect(() => {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-         navigate('/login'); // Redirect to login if no token
-         return;
+  useEffect(() => {
+    // Fetch seller dashboard data
+    const fetchDashboardData = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Assuming JWT is stored in localStorage
+        const response = await axios.get("bookings/dashboard/seller/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setBookings(response.data);
+      } catch (err) {
+        setError("Failed to load dashboard data");
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const fetchSellerData = async () => {
-         try {
-            const res = await fetch(`${BASE_URL}/bookings/seller-dashboard/`, {
-               method: 'GET',
-               headers: {
-                  'Authorization': `Bearer ${token}`
-               }
-            });
-            const data = await res.json();
-            if (res.ok) {
-               setSellerData(data);
-            } else {
-               alert('Failed to fetch seller data');
-            }
-         } catch (err) {
-            console.error(err);
-            alert('An error occurred while fetching seller data.');
-         }
-      };
+    fetchDashboardData();
+  }, []);
 
-      fetchSellerData();
-   }, [navigate]);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
-   return (
-      <section>
-         <Container>
-            <Row>
-               <Col lg="12">
-                  <h2>Seller Dashboard</h2>
-                  {sellerData ? (
-                     <div>
-                        <h3>Welcome, {sellerData.name}</h3>
-                        {/* Display seller-specific info, such as their products */}
-                        <Button>Manage Listings</Button>
-                        <Button>View Orders</Button>
-                     </div>
-                  ) : (
-                     <p>Loading seller data...</p>
-                  )}
-               </Col>
-            </Row>
-         </Container>
-      </section>
-   );
+  return (
+    <div className="seller-dashboard">
+      <h1>Seller Dashboard</h1>
+      <Table striped>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Package Name</th>
+            <th>User Name</th>
+            <th>Phone Number</th>
+            <th>Booking Date</th>
+            <th>Hotels</th>
+            <th>Activities</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bookings.map((booking, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{booking.package_name}</td>
+              <td>{booking.user_full_name}</td>
+              <td>{booking.user_phone_number}</td>
+              <td>{new Date(booking.booking_date).toLocaleString()}</td>
+              <td>
+                {booking.hotel_names.length > 0
+                  ? booking.hotel_names.join(", ")
+                  : "N/A"}
+              </td>
+              <td>
+                {booking.activity_names.length > 0
+                  ? booking.activity_names.join(", ")
+                  : "N/A"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </div>
+  );
 };
 
 export default SellerDashboard;

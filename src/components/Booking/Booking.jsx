@@ -29,48 +29,35 @@ const Booking = ({ tour, avgRating }) => {
 
    const handleClick = async (e) => {
       e.preventDefault();
-
+   
       try {
          if (!user) {
             return alert('Please sign in');
          }
-
-         
-         const res = await fetch(`${BASE_URL}/haha/bookings/`, {
+   
+         const res = await fetch(`${BASE_URL}/bookings/create/`, {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',
+               'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
             },
             credentials: 'include',
             body: JSON.stringify(booking),
          });
-
+   
          const result = await res.json();
-
+   
          if (!res.ok) {
-            // Check for specific error messages or status codes
-            if (res.status === 401) {
-                // Unauthorized
-                return alert('You must be logged in to make a booking.');
-            } else if (res.status === 400) {
-
-               
-               // Bad Request
-               return alert(result.error || 'bad request' );
-           } 
-             else if (res.status === 500) {
-                // Internal Server Error
-                return alert('There was a problem with the server. Please try again later.');
-            } else {
-                // General error message
-                return alert(result.error || 'Booking failed. Please try again.');
-            }
-        }
+            console.log(result);  // Log the detailed error message from the server
+            return alert(result.error || 'Bad request');
+         }
+   
          navigate('/thank-you');
       } catch (error) {
          alert('An error occurred: ' + error.message);
       }
    };
+   
 
    return (
       <div className='booking'>
@@ -96,6 +83,12 @@ const Booking = ({ tour, avgRating }) => {
                   <input type="date" placeholder='' id='booking_date' required onChange={handleChange} />
                   <input type="number" placeholder='Guest' id='number_of_people' required onChange={handleChange} />
                </FormGroup>
+               
+               {/* <FormGroup>
+                   <textarea placeholder='  Additional Notes' id='addtext' required onChange={handleChange}  style={{ fontSize: '11px'}}/>
+               </FormGroup> */}
+
+
             </Form>
          </div>
          {/* =============== BOOKING FORM END ================ */}

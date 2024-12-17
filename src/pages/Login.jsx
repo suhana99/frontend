@@ -44,11 +44,6 @@ const Login = () => {
             return;
          }
    
-         // Handle different user types or messages
-         if (result.message) {
-            alert(result.message); // Display message (e.g., "Admin login successful")
-         }
-   
          // Store tokens in localStorage
          localStorage.setItem('access_token', result.access);
          localStorage.setItem('refresh_token', result.refresh);

@@ -17,7 +17,7 @@ const TourDetails = () => {
     const { user } = useContext(AuthContext); // To get user context
 
     // Fetch the package data from the backend
-    const { data: packageData, loading: packageLoading, error: packageError } = useFetch(`${BASE_URL}/package/package/${id}`);
+    const { data: packageData, loading: packageLoading, error: packageError } = useFetch(`${BASE_URL}/package/packages/${id}`);
 
     // Fetch the reviews for the specific package
     const { data: reviews, loading: reviewsLoading, error: reviewsError } = useFetch(`${BASE_URL}/package/reviews/${id}`);
@@ -27,6 +27,10 @@ const TourDetails = () => {
 
     // Calculate average rating from the reviews
     const { totalRating, avgRating } = calculateAvgRating(reviews);
+
+    //hotels and activities
+    const { hotels = [], activities = [], ...rest } = packageData || {};
+
 
     const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Date options for formatting
 
@@ -45,7 +49,7 @@ const TourDetails = () => {
                 rating: tourRating,
             };
 
-            const res = await fetch(`${BASE_URL}/package/reviews/${id}`, {
+            const res = await fetch(`${BASE_URL}/package/packages/${id}/reviews/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,7 +84,7 @@ const TourDetails = () => {
                             <div className="tour__content">
                                 <img src={photo} alt={title} />
 
-                                <div className="tour__info">
+                                <div className="tour__info" >
                                     <h2>{title}</h2>
                                     <div className="d-flex align-items-center gap-5">
                                         <span className="tour__rating d-flex align-items-center gap-1">
@@ -94,7 +98,35 @@ const TourDetails = () => {
                                     <div className="tour__extra-details">
                                         <span><i className='ri-map-pin-2-line'></i> Duration: {duration} days</span>
                                         <span><i className='ri-money-dollar-circle-line'></i> ${price}/ per person</span>
-                                        <span><i className='ri-check-line'></i> {availability ? 'Available' : 'Not Available'}</span>
+                                        <span><i className='ri-check-line'></i> {availability ? 'Available' : 'Not Available'}</span>  
+                                    </div>
+                                    <div style={{marginTop:"10px", marginBottom:"10px"}}>   
+                                    <span style={{ fontSize: '15px', position:"relative"}}>Hotels: {hotels.length > 0 ? (
+                                                    <span>
+                                                        {hotels.map(hotel => (
+                                                            <li key={hotel.id}>{hotel.name}</li>
+                                                        ))}
+                                                         <button className='btn primary__btn text-white' type=" "  style={{ fontSize: '12px', padding: '5px 10px',  position:'absolute', right:'250px' }}>Customize</button>
+                                                    </span> 
+                                                   
+                                                ) : (
+                                                    <p style={{fontSize:'14px', margin:'-5px '}}>No hotels available<button className='btn primary__btn text-white' type=" "  style={{ fontSize: '12px', padding: '5px 10px',  position:'absolute', right:'250px'}}>Customize</button></p>
+                                            )}
+                                    </span>
+                                    </div>
+                                    <div style={{marginTop:"25px", marginBottom:"25px"}}>
+                                    <span style={{ fontSize: '15px', position:'relative'}}>Activities: {activities.length > 0 ? (
+                                                    <span>
+                                                        {activities.map(activities => (
+                                                            <li key={activities.id}>{activities.name}</li>
+                                                        ))}
+                                                         <button className='btn primary__btn text-white' type=" "  style={{ fontSize: '12px', padding: '5px 10px', position:'absolute', right:'250px' }}>Customize</button>
+                                                    </span> 
+                                                   
+                                                ) : (
+                                                    <p style={{fontSize:'14px', margin:'-5px '}}>No activities available <button className='btn primary__btn text-white' type=" "  style={{ fontSize: '12px', padding: '5px 10px', position:'absolute', right:'250px' }}>Customize</button></p>
+                                            )}
+                                    </span>
                                     </div>
                                     <h5>Description</h5>
                                     <p>{desc}</p>
